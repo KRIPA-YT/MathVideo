@@ -1,5 +1,6 @@
-package de.amethyst.mathvideo;
+package de.amethyst.mathvideo.engine;
 
+import de.amethyst.mathvideo.MathVideo;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -12,19 +13,19 @@ import java.util.List;
 @EqualsAndHashCode
 public class Renderer {
 
-    private final List<Graph> graphs = new ArrayList<>();
+    private final List<Renderable> renderables = new ArrayList<>();
 
     public boolean drawCoordinates = true;
 
-    public void registerGraph(Graph graph) {
-        if (graphs.contains(graph)) {
+    public void registerRenderable(Renderable renderable) {
+        if (renderables.contains(renderable)) {
             return;
         }
-        graphs.add(graph);
+        renderables.add(renderable);
     }
 
-    public void deleteGraph(Graph graph) {
-        graphs.remove(graph);
+    public void deleteRenderable(Renderable renderable) {
+        renderables.remove(renderable);
     }
 
     public void render(Graphics2D g) {
@@ -32,8 +33,8 @@ public class Renderer {
             drawLine(g, MathVideo.GRAY, 0.5, MathVideo.getInstance().getWidth() * -0.5, 0, MathVideo.getInstance().getWidth() * 0.5,  0);
             drawLine(g, MathVideo.GRAY, 0.5, 0, MathVideo.getInstance().getHeight() * -0.5, 0,  MathVideo.getInstance().getHeight() * 0.5);
         }
-        for (Graph graph : graphs) {
-            graph.render(g);
+        for (Renderable renderable : renderables) {
+            renderable.render(g);
         }
     }
 

@@ -1,2 +1,7 @@
-package de.amethyst.mathvideo.engine;public interface Animatable {
+package de.amethyst.mathvideo.engine;
+
+import java.time.Duration;
+
+public interface Animatable {
+    void animate(Duration duration);
 }
