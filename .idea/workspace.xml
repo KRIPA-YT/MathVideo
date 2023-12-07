@@ -4,27 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca2da047-1c7f-4c74-94ff-3289b95b2a81" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/Graph.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MathVideo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/Text.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Animatable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/RenderMath.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Renderable.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Renderer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/Renogare-Regular.otf" afterDir="false" />
+    <list default="true" id="ca2da047-1c7f-4c74-94ff-3289b95b2a81" name="Changes" comment="Added option to color code based on y value">
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MonoColorGraph.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/ReflectionUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/AnimatableDeletable.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/HeightCodedGraph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/Graph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MathVideo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MathVideo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/Text.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/Text.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Animatable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Animatable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/RenderMath.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/RenderMath.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Renderable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Renderable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Renderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Renderer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,8 +44,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -106,6 +99,14 @@
       <option name="presentableId" value="Default" />
       <updated>1701683303971</updated>
     </task>
+    <task id="LOCAL-00001" summary="Initial Commit">
+      <created>1701802967004</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1701802967004</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -118,5 +119,20 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial Commit" />
+    <MESSAGE value="Added option to color code based on y value" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added option to color code based on y value" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.util.ConcurrentModificationException" package="java.util" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -1,29 +1,35 @@
 package de.amethyst.mathvideo;
 
-import de.amethyst.mathvideo.engine.Animatable;
-import de.amethyst.mathvideo.engine.Renderable;
+import de.amethyst.mathvideo.engine.AnimatableDeletable;
 import de.amethyst.mathvideo.engine.Renderer;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.ColorModel;
 import java.lang.reflect.Field;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static de.amethyst.mathvideo.engine.RenderMath.*;
 import static de.amethyst.mathvideo.MathVideo.*;
 
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class Graph extends Renderable implements Animatable {
-    @Setter(AccessLevel.PRIVATE)
+
+@Accessors(chain = true)
+public class Graph implements AnimatableDeletable, Cloneable {
+    @Setter(AccessLevel.PROTECTED)
     @Getter
     private Function<Double, Double> function;
 
-    @Setter
-    @Getter
-    private Color color;
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private Paint paint;
 
     @Setter
     @Getter
@@ -45,46 +51,38 @@ public class Graph extends Renderable implements Animatable {
     @Getter
     private boolean smoothInterpolate;
 
-    @Setter(AccessLevel.PRIVATE)
-    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private Duration animationDuration;
-    @Setter(AccessLevel.PRIVATE)
-    @Getter(AccessLevel.PRIVATE)
-    private double animationT = 1;
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private double animationPercentage = 1;
 
-    @Setter(AccessLevel.PRIVATE)
-    @Getter(AccessLevel.PRIVATE)
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private Duration morphDuration;
-    @Setter(AccessLevel.PRIVATE)
-    @Getter(AccessLevel.PRIVATE)
-    private double morphT = 1;
-    @Setter(AccessLevel.PRIVATE)
-    @Getter(AccessLevel.PRIVATE)
-    private Graph morphTo = this;
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private double morphPercentage = 1;
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private Graph morphTarget = this;
 
-    public Graph(Function<Double, Double> function, Color color, double width) {
-        this(function, color, width, (int) (MathVideo.getInstance().getWidth() * -0.5), (int) (MathVideo.getInstance().getWidth() * 0.5), 1, true);
-    }
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private Duration deletionDuration;
+    @Setter(AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
+    private double deletionPercentage = 0;
 
-    public Graph(Function<Double, Double> function, Color color, double width, int scale) {
-        this(function, color, width, (int) (MathVideo.getInstance().getWidth() * -0.5), (int) (MathVideo.getInstance().getWidth() * 0.5), scale, true);
-    }
-
-    public Graph(Function<Double, Double> function, Color color, double width, int start, int stop) {
-        this(function, color, width, start, stop, 1, true);
-    }
-
-    public Graph(Function<Double, Double> function, Color color, double width, int start, int stop, int scale) {
-        this(function, color, width, start, stop, 1, true);
-    }
-
-    public Graph(Function<Double, Double> function, Color color, double width, int start, int stop, int scale, boolean smoothInterpolate) {
+    public Graph(Function<Double, Double> function, Paint paint, double width, int start, int stop, int scale, boolean smoothInterpolate) {
         this.setFunction(function);
-        this.setColor(color);
+        this.setPaint(paint);
         this.setWidth(width);
         this.setStart(start);
         this.setStop(stop);
         this.setScale(scale);
+        this.setSmoothInterpolate(smoothInterpolate);
     }
 
     public double evaluate(double x) {
@@ -94,38 +92,33 @@ public class Graph extends Renderable implements Animatable {
     @Override
     public void animate(Duration duration) {
         this.setAnimationDuration(duration);
-        this.setAnimationT(0);
+        this.setAnimationPercentage(0);
         MathVideo.getRenderer().registerRenderable(this);
     }
 
-    public void animateWait(Duration duration) throws InterruptedException {
-        this.animate(duration);
-        Thread.sleep(duration.toMillis());
-    }
-
-    public void morph(Duration duration, Graph morphTo) {
+    public void morph(Duration duration, Graph morphTarget) {
         this.setMorphDuration(duration);
-        this.setMorphT(0);
-        this.setMorphTo(morphTo);
+        this.setMorphPercentage(0);
+        this.setMorphTarget(morphTarget);
         MathVideo.getRenderer().registerRenderable(this);
     }
 
-    public void morphWait(Duration duration, Graph morphTo) throws InterruptedException {
-        this.morph(duration, morphTo);
+    public void morphWait(Duration duration, Graph morphTarget) throws InterruptedException {
+        this.morph(duration, morphTarget);
         Thread.sleep(duration.toMillis());
-    }
-
-    public void delete() {
-        MathVideo.getRenderer().deleteRenderable(this);
     }
 
     @Override
     public void render(Graphics2D g) {
-        for (double i = this.getStart(); i < cerp(this.getAnimationT(), this.getStart(), this.getStop()); i += RESOLUTION) {
-            double y1 = cerp(this.getMorphT(), this.evaluate(i), this.getMorphTo().evaluate(i));
-            double y2 = cerp(this.getMorphT(), this.evaluate(i + RESOLUTION), this.getMorphTo().evaluate(i + RESOLUTION));
-            float[] startHSB = Color.RGBtoHSB(this.getColor().getRed(), this.getColor().getGreen(), this.getColor().getBlue(), null);
-            float[] targetHSB = Color.RGBtoHSB(this.getMorphTo().getColor().getRed(), this.getMorphTo().getColor().getGreen(), this.getMorphTo().getColor().getBlue(), null);
+        double start = interpolate(this.getDeletionPercentage(), this.getStart(), this.getStop());
+        double stop = interpolate(this.getAnimationPercentage(), this.getStart(), this.getStop());
+        for (double i = start; i < stop; i += RESOLUTION) {
+            double y1 = interpolate(this.getMorphPercentage(), this.evaluate(i), this.getMorphTarget().evaluate(i));
+            double y2 = interpolate(this.getMorphPercentage(), this.evaluate(i + RESOLUTION), this.getMorphTarget().evaluate(i + RESOLUTION));
+            int[] color = this.getColorAtPos(g, this.getPaint(), new Point2D.Double(i, y1));
+            int[] targetColor = this.getColorAtPos(g, this.getMorphTarget().getPaint(), new Point2D.Double(i, y1));
+            float[] startHSB = Color.RGBtoHSB(color[0], color[1], color[2], null);
+            float[] targetHSB = Color.RGBtoHSB(targetColor[0], targetColor[1], targetColor[2],null);
             // Adjust for Residual class of Hue Part 1
             if (Math.abs(startHSB[0] - targetHSB[0]) > 0.5) {
                 if (startHSB[0] > targetHSB[0]) {
@@ -134,41 +127,58 @@ public class Graph extends Renderable implements Animatable {
                     targetHSB[0] -= 1;
                 }
             }
-            double[] interHSB = {cerp(this.getMorphT(), startHSB[0], targetHSB[0]), cerp(this.getMorphT(), startHSB[1], targetHSB[1]), cerp(this.getMorphT(), startHSB[2], targetHSB[2])};
+            double[] interHSB = {
+                    interpolate(this.getMorphPercentage(), startHSB[0], targetHSB[0]),
+                    interpolate(this.getMorphPercentage(), startHSB[1], targetHSB[1]),
+                    interpolate(this.getMorphPercentage(), startHSB[2], targetHSB[2])};
             // Adjust for Residual class of Hue Part 2
             if (interHSB[0] < 0) {
                 interHSB[0] += 1;
             }
-            Renderer.drawLine(g, new Color(Color.HSBtoRGB((float) interHSB[0], (float) interHSB[1], (float) interHSB[2])), this.getWidth(), i, y1, i + RESOLUTION, y2);
+            Renderer.drawLine(g, new Color(Color.HSBtoRGB((float) interHSB[0], (float) interHSB[1], (float) interHSB[2])), this.getWidth(), new Point2D.Double(i, y1), new Point2D.Double(i + RESOLUTION, y2));
         }
         updateAnimation();
         updateMorph();
+        updateDeletion();
+    }
+
+    @Override
+    public void animateDelete(Duration duration) {
+        this.setDeletionDuration(duration);
+        this.setDeletionPercentage(0);
     }
 
     private void updateAnimation() {
         if (this.isAnimationFinished()) {
             return;
         }
-        this.setAnimationT(this.getAnimationT() + 1 / (FRAMERATE * this.getAnimationDuration().toMillis() / 1000));
+        this.setAnimationPercentage(this.getAnimationPercentage() + 1 / (FRAMERATE * this.getAnimationDuration().toMillis() / 1000));
     }
 
     private void updateMorph() {
         if (this.isMorphFinished()) {
             return;
         }
-        this.setMorphT(this.getMorphT() + 1 / (FRAMERATE * this.getMorphDuration().toMillis() / 1000));
+        this.setMorphPercentage(this.getMorphPercentage() + 1 / (FRAMERATE * this.getMorphDuration().toMillis() / 1000));
+    }
+
+    private void updateDeletion() {
+        if (this.isDeletionFinished()) {
+            return;
+        }
+        this.setDeletionPercentage(this.getDeletionPercentage() + 1 / (FRAMERATE * this.getDeletionDuration().toMillis() / 1000));
     }
 
     private boolean isAnimationFinished() {
-        if (this.getAnimationT() >= 1) {
-            if (this.getAnimationT() > 1) {
-                this.setAnimationT(1);
+        if (this.getAnimationPercentage() >= 1) {
+            if (this.getAnimationPercentage() > 1) {
+                this.setAnimationPercentage(1);
             }
             return true;
         }
 
         if (this.getAnimationDuration().isZero()) {
-            this.setAnimationT(1);
+            this.setAnimationPercentage(1);
             return true;
         }
 
@@ -176,34 +186,82 @@ public class Graph extends Renderable implements Animatable {
     }
 
     private boolean isMorphFinished() {
-        if (this.getMorphT() >= 1) {
-            if (this.getMorphT() > 1) {
-                this.setMorphT(1);
+        if (this.getMorphPercentage() >= 1) {
+            if (this.getMorphPercentage() > 1) {
+                this.setMorphPercentage(1);
             }
-            if (this.getMorphTo() != this) {
+            if (this.getMorphTarget() != this) {
                 copySelf();
             }
             return true;
         }
 
         if (this.getMorphDuration().isZero()) {
-            this.setMorphT(1);
+            this.setMorphPercentage(1);
             return true;
         }
 
         return false;
     }
 
+    private boolean isDeletionFinished() {
+        if (this.getDeletionPercentage() >= 1) {
+            if (this.getDeletionPercentage() > 1) {
+                this.setDeletionPercentage(1);
+            }
+            MathVideo.getRenderer().deleteRenderable(this);
+            return true;
+        }
+
+        if (this.getDeletionDuration() == null) {
+            return true;
+        }
+
+        if (this.getDeletionDuration().isZero()) {
+            this.setDeletionPercentage(1);
+            return true;
+        }
+
+        return false;
+    }
+
+    private double interpolate(double distance, double start, double stop) {
+        return this.isSmoothInterpolate() ? cerp(distance, start, stop) : lerp(distance, start, stop);
+    }
+
+    private int[] getColorAtPos(Graphics2D g, Paint paint, Point2D pos) {
+        AffineTransform userSpaceToDeviceSpace = g.getTransform();
+        PaintContext paintContext = paint.createContext(
+                ColorModel.getRGBdefault(),
+                g.getDeviceConfiguration().getBounds(),
+                MathVideo.getInstance().getBounds(),
+                g.getTransform(),
+                g.getRenderingHints());
+        Point2D userSpace = Renderer.coordinateSpaceToUserSpace(pos);
+        Point2D deviceSpace = userSpaceToDeviceSpace.transform(userSpace, null);
+        return paintContext.getRaster((int) deviceSpace.getX(), (int) deviceSpace.getY(), (int) RESOLUTION, (int) RESOLUTION).getPixel(0, 0, (int[]) null);
+    }
+
     private void copySelf() {
-        Field[] fields = this.getClass().getDeclaredFields();
+        Iterable<Field> fields = ReflectionUtil.getFieldsUpTo(this.getClass(), Object.class);
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
-                field.set(this, field.get(this.getMorphTo()));
+                field.set(this, field.get(this.getMorphTarget()));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-        this.setMorphTo(this);
+        this.setFunction(this.getMorphTarget().getFunction());
+        this.setMorphTarget(this);
+    }
+
+    @Override
+    public Graph clone() {
+        try {
+            return (Graph) super.clone();
+        } catch (CloneNotSupportedException ignored) {
+            return null;
+        }
     }
 }

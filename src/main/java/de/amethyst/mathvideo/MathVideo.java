@@ -1,5 +1,6 @@
 package de.amethyst.mathvideo;
 
+import de.amethyst.mathvideo.engine.HeightCodedGraph;
 import de.amethyst.mathvideo.engine.Renderer;
 import lombok.Getter;
 
@@ -8,6 +9,7 @@ import javax.swing.JFrame;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.time.Duration;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -75,26 +77,45 @@ public class MathVideo extends JPanel {
         mathVideoFrame.setSize(1920, 1080);
         mathVideoFrame.setUndecorated(true);
         mathVideoFrame.setVisible(true);
-        //GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0].setFullScreenWindow(mathVideoFrame);
 
         // Draw graphs
-        Graph begin = new Graph(x -> 0.0, RED, 100);
+        Graph begin = new MonoColorGraph(x -> 0.0, RED, 100);
         begin.draw();
         Thread.sleep(5000);
         begin.delete();
-        Graph intro = new Graph(x -> x/sin(x), RED, 3, 25);
-        intro.animateWait(Duration.ofMillis(2500));
-        intro.morphWait(Duration.ofMillis(2500), new Graph(x -> sin(x)/x*5, YELLOW, 3, 100));
-        intro.morphWait(Duration.ofMillis(2500), new Graph(Math::tan, GREEN, 3, 100));
-        intro.morphWait(Duration.ofMillis(2500), new Graph(x -> tan(x)/x, BLUE, 3, 100));
-        intro.morph(Duration.ofMillis(2500), new Graph(x -> x/2.0, RED, 3, 100));
-        Thread.sleep(1250);
-        new Graph(x -> pow(x/2, 2), GREEN, 3, 100).animate(Duration.ofMillis(2500));
-        new Graph(x -> -pow(x/3, 3), BLUE, 3, 100).animateWait(Duration.ofMillis(2500));
-        new Text(new Point2D.Double(0, 350), "Konvergenz zu +/- Unendlich", WHITE).animateWait(Duration.ofMillis(1000));
-        new Text(new Point2D.Double(0, 300), "bei ganzrationalen Funktionen", WHITE, 25).animate(Duration.ofMillis(750));
-        new Text(new Point2D.Double(0, -350), "von Amy, Raphael, Ray und Sebastian", GRAY, 25).animateWait(Duration.ofMillis(750));
-        Thread.sleep(2500);
-    }
 
+        Graph intro = new MonoColorGraph(x -> x/sin(x), RED, 3, 25);
+        intro.animateWait(Duration.ofMillis(2500));
+        intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(x -> sin(x)/x*5, YELLOW, 3, 100));
+        intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(Math::tan, GREEN, 3, 100));
+        intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(x -> tan(x)/x, BLUE, 3, 100));
+        intro.morph(Duration.ofMillis(2500), new MonoColorGraph(x -> x/2.0, RED, 3, 100));
+        Thread.sleep(1250);
+
+        Graph parabola = new MonoColorGraph(x -> pow(x/2, 2), GREEN, 3, 100);
+        Graph hyperbola = new MonoColorGraph(x -> -pow(x/3, 3), BLUE, 3, 100);
+        Text title = new Text(new Point2D.Double(0, 350), "Konvergenz zu +/- Unendlich", WHITE);
+        Text subtitle = new Text(new Point2D.Double(0, 300), "bei ganzrationalen Funktionen", WHITE, 25);
+        Text credits = new Text(new Point2D.Double(0, -350), "von Amy, Raphael, Ray und Sebastian", GRAY, 25);
+        parabola.animate(Duration.ofMillis(2500));
+        hyperbola.animateWait(Duration.ofMillis(2500));
+        title.animateWait(Duration.ofMillis(1000));
+        subtitle.animate(Duration.ofMillis(750));
+        credits.animateWait(Duration.ofMillis(750));
+        Thread.sleep(2500);
+
+        intro.animateDelete(Duration.ofMillis(1000));
+        parabola.animateDelete(Duration.ofMillis(1000));
+        hyperbola.morph(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> pow(x/3, 3)));
+        title.animateDeleteWait(Duration.ofMillis(500));
+        subtitle.animateDelete(Duration.ofMillis(500));
+        credits.animateDeleteWait(Duration.ofMillis(500));
+
+        hyperbola.morphWait(Duration.ofMillis(1000), new HeightCodedGraph(x -> pow(x/3, 3), Map.ofEntries(
+                Map.entry(-1, BLUE),
+                Map.entry(1, RED)
+        ), hyperbola.getWidth(), hyperbola.getScale()));
+        hyperbola.morphWait(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> -(pow(x/3, 4) + 3 * pow(x/3, 3) + pow(x/3, 2) + x/3 + 3)));
+        hyperbola.morphWait(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> (pow(x/2, 5) + 3 * pow(x/2, 4) - 11 * pow(x/2, 3) - 27 * pow(x/2, 2) + 10 * x/2 + 32) / 20.0));
+    }
 }

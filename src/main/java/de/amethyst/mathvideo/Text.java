@@ -1,10 +1,12 @@
 package de.amethyst.mathvideo;
 
-import de.amethyst.mathvideo.engine.Animatable;
-import de.amethyst.mathvideo.engine.Renderable;
+import de.amethyst.mathvideo.engine.AnimatableDeletable;
+import de.amethyst.mathvideo.engine.Renderer;
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.time.Duration;
@@ -13,9 +15,10 @@ import java.util.Objects;
 import static de.amethyst.mathvideo.engine.RenderMath.*;
 import static de.amethyst.mathvideo.MathVideo.*;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @ToString
-public class Text extends Renderable implements Animatable {
+@Accessors(chain = true)
+public class Text implements AnimatableDeletable, Cloneable {
     @Setter
     @Getter
     private Point2D position;
@@ -38,12 +41,27 @@ public class Text extends Renderable implements Animatable {
     @Getter
     private boolean centered;
 
+    @Setter
+    @Getter
+    private boolean smoothInterpolate;
+
+    @Setter
+    @Getter
+    private boolean smoothDelete = true;
+
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
     private Duration animationDuration;
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
-    private double animationT = 1;
+    private double animationPercentage = 1;
+
+    @Setter(AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
+    private Duration deletionDuration;
+    @Setter(AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
+    private double deletionPercentage = 0;
 
     static {
         try {
@@ -54,31 +72,31 @@ public class Text extends Renderable implements Animatable {
     }
 
     public Text(Point2D position, String content, Color color) {
-        this(position, content, color, 100, true);
+        this(position, content, color, 100, true, true);
     }
 
     public Text(Point2D position, String content, Color color, int size) {
-        this(position, content, color, size, true);
+        this(position, content, color, size, true, true);
     }
 
     public Text(Point2D position, String content, Color color, int size, boolean centered) {
+        this(position, content, color, size, centered, true);
+    }
+
+    public Text(Point2D position, String content, Color color, int size, boolean centered, boolean smoothInterpolate) {
         this.setPosition(position);
         this.setContent(content);
         this.setColor(color);
         this.setSize(size);
         this.setCentered(centered);
+        this.setSmoothInterpolate(smoothInterpolate);
     }
 
     @Override
     public void animate(Duration duration) {
-        this.setAnimationT(0);
+        this.setAnimationPercentage(0);
         this.setAnimationDuration(duration);
         MathVideo.getRenderer().registerRenderable(this);
-    }
-
-    public void animateWait(Duration duration) throws InterruptedException {
-        this.animate(duration);
-        Thread.sleep(duration.toMillis());
     }
 
     @Override
@@ -86,26 +104,89 @@ public class Text extends Renderable implements Animatable {
         Font font = renogare.deriveFont((float) this.getSize());
         g.setFont(font);
         g.setColor(this.getColor());
-        double renderX = MathVideo.getInstance().getWidth() / 2.0 + this.getPosition().getX();
-        double renderY = MathVideo.getInstance().getHeight() / 2.0 - this.getPosition().getY();
+        Point2D renderCoords = Renderer.coordinateSpaceToUserSpace(this.getPosition());
         FontMetrics metrics = g.getFontMetrics(font);
         if (this.isCentered()) {
-            renderX -= metrics.stringWidth(this.getContent()) / 2.0;
-            renderY += (metrics.getHeight() - metrics.getAscent() - metrics.getDescent()) / 2.0;
+            AffineTransform centerShift = AffineTransform.getTranslateInstance(
+                    metrics.stringWidth(this.getContent()) / -2.0,
+                    (metrics.getHeight() - metrics.getAscent() - metrics.getDescent()) / 2.0);
+            renderCoords = centerShift.transform(renderCoords, null);
         }
-        updateAnimation(g, renderX, metrics.stringWidth(this.getContent()));
-        g.drawString(this.getContent(), (float) renderX, (float) renderY);
+        updateAnimation(g, renderCoords.getX(), metrics.stringWidth(this.getContent()));
+        updateDeletion(g, renderCoords.getX(), metrics.stringWidth(this.getContent()));
+        g.drawString(this.getContent(), (float) renderCoords.getX(), (float) renderCoords.getY());
+    }
+
+    @Override
+    public void animateDelete(Duration duration) {
+        this.setDeletionDuration(duration);
+        this.setDeletionPercentage(0);
     }
 
     private void updateAnimation(Graphics2D g, double x, double width) {
-        if (this.getAnimationT() >= 1) {
-            if (this.getAnimationT() > 1) {
-                this.setAnimationT(1);
+        if (this.getAnimationPercentage() >= 1) {
+            if (this.getAnimationPercentage() > 1) {
+                this.setAnimationPercentage(1);
             }
             return;
         }
-        g.setPaint(new GradientPaint((float) cerp(this.getAnimationT(), x, x + width), 0, this.getColor(), (float) cerp(this.getAnimationT(), x, x + width) + this.getSize(), 0, new Color(0, 0, 0, 0)));
+        g.setPaint(new GradientPaint((float) interpolate(this.getAnimationPercentage(), x, x + width), 0, this.getColor(), (float) interpolate(this.getAnimationPercentage(), x, x + width) + this.getSize(), 0, new Color(0, 0, 0, 0)));
 
-        this.setAnimationT(this.getAnimationT() + 1 / (FRAMERATE * this.getAnimationDuration().toMillis() / 1000));
+        this.setAnimationPercentage(this.getAnimationPercentage() + 1 / (FRAMERATE * this.getAnimationDuration().toMillis() / 1000));
+    }
+
+    private void updateDeletion(Graphics2D g, double x, double width) {
+        if (this.getDeletionDuration() == null) { // Deletion hasn't started
+            return;
+        }
+
+        if (this.isDeletionFinished()) {
+            g.setColor(new Color(0, 0, 0, 0));
+            return;
+        }
+
+        if (this.isSmoothDelete()) {
+            g.setPaint(new GradientPaint((float) interpolate(this.getDeletionPercentage(), x, x + width), 0, new Color(0, 0, 0, 0), (float) interpolate(this.getDeletionPercentage(), x, x + width) + this.getSize(), 0, this.getColor()));
+        } else {
+            g.setColor(new Color(
+                    this.getColor().getRed(), this.getColor().getBlue(), this.getColor().getGreen(),
+                    (int) interpolate(this.getDeletionPercentage(), 255, 0)));
+        }
+
+        this.setDeletionPercentage(this.getDeletionPercentage() + 1 / (FRAMERATE * this.getDeletionDuration().toMillis() / 1000));
+    }
+
+    private boolean isDeletionFinished() {
+        if (this.getDeletionPercentage() >= 1) {
+            if (this.getDeletionPercentage() > 1) {
+                this.setDeletionPercentage(1);
+            }
+            MathVideo.getRenderer().deleteRenderable(this);
+            return true;
+        }
+
+        if (this.getDeletionDuration() == null) {
+            return true;
+        }
+
+        if (this.getDeletionDuration().isZero()) {
+            this.setDeletionPercentage(1);
+            return true;
+        }
+
+        return false;
+    }
+
+    private double interpolate(double distance, double start, double stop) {
+        return this.isSmoothInterpolate() ? cerp(distance, start, stop) : lerp(distance, start, stop);
+    }
+
+    @Override
+    public Text clone() {
+        try {
+            return (Text) super.clone();
+        } catch (CloneNotSupportedException ignored) {
+            return null;
+        }
     }
 }
