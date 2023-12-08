@@ -1,7 +1,6 @@
-package de.amethyst.mathvideo;
+package de.amethyst.mathvideo.engine;
 
-import de.amethyst.mathvideo.engine.AnimatableDeletable;
-import de.amethyst.mathvideo.engine.Renderer;
+import de.amethyst.mathvideo.MathVideo;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -150,7 +149,7 @@ public class Text implements AnimatableDeletable, Cloneable {
         } else {
             g.setColor(new Color(
                     this.getColor().getRed(), this.getColor().getBlue(), this.getColor().getGreen(),
-                    (int) interpolate(this.getDeletionPercentage(), 255, 0)));
+                    (int) interpolate(this.getDeletionPercentage(), this.getColor().getAlpha(), 0)));
         }
 
         this.setDeletionPercentage(this.getDeletionPercentage() + 1 / (FRAMERATE * this.getDeletionDuration().toMillis() / 1000));

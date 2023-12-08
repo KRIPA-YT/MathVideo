@@ -1,6 +1,6 @@
-package de.amethyst.mathvideo;
+package de.amethyst.mathvideo.engine;
 
-import de.amethyst.mathvideo.engine.HeightCodedGraph;
+import de.amethyst.mathvideo.MathVideo;
 
 import java.awt.*;
 import java.util.Collections;

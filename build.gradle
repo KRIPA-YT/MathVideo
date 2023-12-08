@@ -8,10 +8,15 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://www2.ph.ed.ac.uk/maven2/'
+    }
 }
 
 dependencies {
     implementation 'org.jetbrains:annotations:20.1.0'
+    implementation 'org.scilab.forge:jlatexmath:1.0.7'
+    implementation 'net.sf.saxon:saxon9-dom:9.1.0.8'
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'

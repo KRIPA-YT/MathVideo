@@ -1,7 +1,6 @@
 package de.amethyst.mathvideo;
 
-import de.amethyst.mathvideo.engine.HeightCodedGraph;
-import de.amethyst.mathvideo.engine.Renderer;
+import de.amethyst.mathvideo.engine.*;
 import lombok.Getter;
 
 import javax.swing.JPanel;
@@ -9,6 +8,7 @@ import javax.swing.JFrame;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,7 +24,7 @@ public class MathVideo extends JPanel {
     public static final Color GREEN = new Color(0x0ECE8D);
     public static final Color BLUE = new Color(0x2C9FD5);
     public static final double FRAMERATE = 60.0;
-    public static final double RESOLUTION = 1;
+    public static final double RESOLUTION = 1.0;
 
     private static MathVideo self;
     @Getter
@@ -79,19 +79,26 @@ public class MathVideo extends JPanel {
         mathVideoFrame.setVisible(true);
 
         // Draw graphs
-        Graph begin = new MonoColorGraph(x -> 0.0, RED, 100);
+        /*Graph begin = new MonoColorGraph(x -> 0.0, RED, 100);
         begin.draw();
         Thread.sleep(5000);
-        begin.delete();
+        begin.delete();*/
 
+        LaTeX func = new LaTeX("f(x)=\\frac{x}{sin(x)}", GRAY, new Point2D.Double(mathVideo.getWidth() / 2.0 - 50, mathVideo.getHeight() / -2.0 + 50), 40, LaTeX.Alignment.RIGHT, true);
         Graph intro = new MonoColorGraph(x -> x/sin(x), RED, 3, 25);
+        func.animate(Duration.ofMillis(250));
         intro.animateWait(Duration.ofMillis(2500));
+        func.morph(Duration.ofMillis(500), "f(x)=\\frac{sin(x)}{5x}");
         intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(x -> sin(x)/x*5, YELLOW, 3, 100));
+        func.morph(Duration.ofMillis(500), "f(x)=tan(x)");
         intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(Math::tan, GREEN, 3, 100));
+        func.morph(Duration.ofMillis(500), "f(x)=\\frac{tan(x)}{x}");
         intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(x -> tan(x)/x, BLUE, 3, 100));
+        func.morph(Duration.ofMillis(500), "f(x)=\\frac{1}{2}x");
+
         intro.morph(Duration.ofMillis(2500), new MonoColorGraph(x -> x/2.0, RED, 3, 100));
         Thread.sleep(1250);
-
+        func.animateDelete(Duration.ofMillis(250));
         Graph parabola = new MonoColorGraph(x -> pow(x/2, 2), GREEN, 3, 100);
         Graph hyperbola = new MonoColorGraph(x -> -pow(x/3, 3), BLUE, 3, 100);
         Text title = new Text(new Point2D.Double(0, 350), "Konvergenz zu +/- Unendlich", WHITE);
@@ -102,20 +109,33 @@ public class MathVideo extends JPanel {
         title.animateWait(Duration.ofMillis(1000));
         subtitle.animate(Duration.ofMillis(750));
         credits.animateWait(Duration.ofMillis(750));
-        Thread.sleep(2500);
+        Thread.sleep(2500); // INTRO DURATION
 
         intro.animateDelete(Duration.ofMillis(1000));
         parabola.animateDelete(Duration.ofMillis(1000));
         hyperbola.morph(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> pow(x/3, 3)));
+        func.setLaTeX("f(x)=\\frac{1}{27}x^3");
+        func.animate(Duration.ofMillis(250));
+
         title.animateDeleteWait(Duration.ofMillis(500));
         subtitle.animateDelete(Duration.ofMillis(500));
         credits.animateDeleteWait(Duration.ofMillis(500));
 
+        Thread.sleep(2500); // MONO COLOR HYPERBOLA DURATION
+        hyperbola.delete();
+        hyperbola = new HeightCodedGraph(x -> pow(x/3, 3), Collections.singletonMap(0, BLUE), hyperbola.getWidth(), hyperbola.getScale());
         hyperbola.morphWait(Duration.ofMillis(1000), new HeightCodedGraph(x -> pow(x/3, 3), Map.ofEntries(
                 Map.entry(-1, BLUE),
                 Map.entry(1, RED)
         ), hyperbola.getWidth(), hyperbola.getScale()));
+        Thread.sleep(2500); // COLORCODED HYPERBOLA DURATION
+        func.morph(Duration.ofMillis(500), "f(x)=-\\frac{1}{81}x^4-\\frac{1}{9}x^3-\\frac{1}{9}x^2-\\frac{1}{3}x-3");
         hyperbola.morphWait(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> -(pow(x/3, 4) + 3 * pow(x/3, 3) + pow(x/3, 2) + x/3 + 3)));
+        Thread.sleep(2500); // COLORCODED PARABOLA DURATION
+        func.morph(Duration.ofMillis(500), "f(x)={\\frac{1}{640}x^5+\\frac{3}{320}x^4-\\frac{11}{160}x^3-\\frac{27}{80}x^2+\\frac{1}{4}x+\\frac{4}{5}}");
         hyperbola.morphWait(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> (pow(x/2, 5) + 3 * pow(x/2, 4) - 11 * pow(x/2, 3) - 27 * pow(x/2, 2) + 10 * x/2 + 32) / 20.0));
+        Thread.sleep(2500); // COLORCODED HYPERBOLA DURATION
+        LaTeX limit = new LaTeX("\\begin{gather}x\\to+\\infty\\\\ f(x)\\to+\\infty\\end{gather}", RED, new Point2D.Double(0, 500), 75, LaTeX.Alignment.CENTER, true);
+        limit.animate(Duration.ofMillis(1000));
     }
 }

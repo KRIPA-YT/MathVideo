@@ -1,7 +1,7 @@
-package de.amethyst.mathvideo;
+package de.amethyst.mathvideo.engine;
 
-import de.amethyst.mathvideo.engine.AnimatableDeletable;
-import de.amethyst.mathvideo.engine.Renderer;
+import de.amethyst.mathvideo.MathVideo;
+import de.amethyst.mathvideo.ReflectionUtil;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -11,7 +11,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
 import java.lang.reflect.Field;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.function.Function;
 
 import static de.amethyst.mathvideo.engine.RenderMath.*;
@@ -23,7 +22,7 @@ import static de.amethyst.mathvideo.MathVideo.*;
 
 @Accessors(chain = true)
 public class Graph implements AnimatableDeletable, Cloneable {
-    @Setter(AccessLevel.PROTECTED)
+    @Setter
     @Getter
     private Function<Double, Double> function;
 

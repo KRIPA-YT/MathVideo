@@ -11,14 +11,14 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimerTask;
 
 @ToString
 @EqualsAndHashCode
 public class Renderer {
 
     private final List<Renderable> renderables = new ArrayList<>();
-    private final List<Runnable> renderModificationQueue = new ArrayList<>();
+    private final List<Runnable> renderRegisterQueue = new ArrayList<>();
+    private final List<Runnable> renderDeletionQueue = new ArrayList<>();
 
     public boolean drawCoordinates = true;
 
@@ -26,11 +26,17 @@ public class Renderer {
         if (renderables.contains(renderable)) {
             return;
         }
-        renderModificationQueue.add(() -> renderables.add(renderable));
+        renderRegisterQueue.add(() -> {
+            renderables.add(renderable);
+            System.out.printf("Adding %s%n", renderable.getClass().getTypeName());
+        });
     }
 
     public void deleteRenderable(Renderable renderable) {
-        renderModificationQueue.add(() -> renderables.remove(renderable));
+        renderDeletionQueue.add(() -> {
+            renderables.remove(renderable);
+            System.out.printf("Removing %s%n", renderable.getClass().getTypeName());
+        });
     }
 
     public void render(Graphics2D g) {
@@ -38,7 +44,11 @@ public class Renderer {
             drawLine(g, MathVideo.GRAY, 0.5, new Point2D.Double(MathVideo.getInstance().getWidth() * -0.5, 0), new Point2D.Double(MathVideo.getInstance().getWidth() * 0.5,  0));
             drawLine(g, MathVideo.GRAY, 0.5, new Point2D.Double(0, MathVideo.getInstance().getHeight() * -0.5), new Point2D.Double(0,  MathVideo.getInstance().getHeight() * 0.5));
         }
-        for (Iterator<Runnable> iterator = renderModificationQueue.iterator(); iterator.hasNext();) {
+        for (Iterator<Runnable> iterator = renderDeletionQueue.iterator(); iterator.hasNext();) {
+            iterator.next().run();
+            iterator.remove();
+        }
+        for (Iterator<Runnable> iterator = renderRegisterQueue.iterator(); iterator.hasNext();) {
             iterator.next().run();
             iterator.remove();
         }

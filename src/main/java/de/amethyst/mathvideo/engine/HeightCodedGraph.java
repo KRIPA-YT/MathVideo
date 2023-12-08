@@ -1,7 +1,5 @@
 package de.amethyst.mathvideo.engine;
 
-import com.sun.source.tree.Tree;
-import de.amethyst.mathvideo.Graph;
 import de.amethyst.mathvideo.MathVideo;
 
 import java.awt.*;
@@ -11,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static de.amethyst.mathvideo.engine.RenderMath.*;
 
