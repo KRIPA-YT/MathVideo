@@ -98,22 +98,22 @@ public class MathVideo extends JPanel {
         Graph intro = new MonoColorGraph(x -> x/sin(x), RED, 3, 25);
         func.animate(Duration.ofMillis(250));
         intro.animateWait(Duration.ofMillis(2500));
-        Thread.sleep(2500);
+        Thread.sleep(2000);
         func.morph(Duration.ofMillis(500), "f(x)=\\frac{\\sin(x)}{5x}");
         intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(x -> sin(x)/x*5, YELLOW, 3, 100));
-        Thread.sleep(2500);
+        Thread.sleep(2000);
         func.morph(Duration.ofMillis(500), "f(x)=\\frac{tan(x)}{2}");
         intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(Math::tan, GREEN, 3, 100));
-        Thread.sleep(2500);
+        Thread.sleep(2000);
         func.morph(Duration.ofMillis(500), "f(x)=\\frac{\\tan(x)}{x}");
         intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(x -> tan(x)/x, BLUE, 3, 100));
-        Thread.sleep(2500);
+        Thread.sleep(2000);
         func.morph(Duration.ofMillis(500), "f(x)=\\frac{2^x}{10}");
         intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(x -> pow(2, x) / 10, YELLOW, 3, 100));
-        Thread.sleep(2500);
+        Thread.sleep(2000);
         func.morph(Duration.ofMillis(500), "f(x)=\\frac{1}{x}");
         intro.morphWait(Duration.ofMillis(2500), new MonoColorGraph(x -> 1/x, GREEN, 3, 100));
-        Thread.sleep(2500);
+        Thread.sleep(2000);
 
         func.morph(Duration.ofMillis(500), "f(x)=\\frac{1}{2}x");
         intro.morph(Duration.ofMillis(2500), new MonoColorGraph(x -> x/2.0, RED, 3, 100));
@@ -144,35 +144,39 @@ public class MathVideo extends JPanel {
         title.animateDeleteWait(Duration.ofMillis(500));
         subtitle.animateDelete(Duration.ofMillis(500));
         credits.animateDeleteWait(Duration.ofMillis(500));
-        Thread.sleep(2500);
+        Thread.sleep(9000);
+        /*Schauen wir uns zuerst das Verhalten an, wenn x gegen Plus Unendlich geht. In diesem Fall nähert sich die Funktion immer mehr*/
         hyperbola.delete();
     }
 
     private static void examples(LaTeX func) throws InterruptedException {
-        /*Schauen wir uns zuerst das Verhalten an, wenn x gegen Plus Unendlich geht. In diesem Fall nähert sich die Funktion immer mehr*/
         Graph hyperbola = new HeightCodedGraph(x -> pow(x/3, 3), Collections.singletonMap(0, BLUE), 3, 100);
         hyperbola.morphWait(Duration.ofMillis(1000), new HeightCodedGraph(x -> pow(x/3, 3), Map.ofEntries(
                 Map.entry(-1, BLUE),
                 Map.entry(1, RED)
         ), hyperbola.getWidth(), hyperbola.getScale()));
-        Thread.sleep(2500);
+        Thread.sleep(9000);
         /*positiver Unendlichkeit. Und jetzt, wenn x gegen Minus Unendlich geht, nähern sich die die Funktionswerte negativer Unendlichkeit.*/
         func.morph(Duration.ofMillis(500), "f(x)={\\frac{1}{640}x^5+\\frac{3}{320}x^4-\\frac{11}{160}x^3-\\frac{27}{80}x^2+\\frac{1}{4}x+\\frac{4}{5}}");
         hyperbola.morphWait(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> (pow(x/2, 5) + 3 * pow(x/2, 4) - 11 * pow(x/2, 3) - 27 * pow(x/2, 2) + 10 * x/2 + 32) / 20.0));
-        Thread.sleep(2500);
+        Thread.sleep(4000);
         /* Mathematisch ausgedrückt bedeutet das, wenn wir das Verhalten der Funktion f(x) für x-Werte gegen*/
         LaTeX limit = new LaTeX("\\begin{gather}x\\to+\\infty\\\\ f(x)\\to+\\infty\\end{gather}", RED, new Point2D.Double(0, 400), 75, LaTeX.Alignment.CENTER, true);
         limit.animate(Duration.ofMillis(1000));
-        Thread.sleep(2500);
+        Thread.sleep(10000);
         /*+∞ betrachten, geht f(x) ebenfalls gegen Plus Unendlich.*/
         limit.animateDelete(Duration.ofMillis(1000));
         hyperbola.morphWait(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> (5 * pow(x, 4) - 2 * pow(x, 2) + 5) / 10));
         func.morph(Duration.ofMillis(500), "f(x)=\\frac{5x^4-2x^2+5}{10}");
-        Thread.sleep(2500);
-        /*Und wenn x gegen Minus Unendlich geht, sehen Sie,*/
+        Thread.sleep(6000 + 3000);
+        /*Betrachten wir ein Beispiel mit einer ganzrationalen Funktion, zum Beispiel f(x) = 5x^4-2x^2+5. Wenn x gegen Plus Unendlich geht, schauen Sie sich an, wie sich die Funktion verhält*/
         hyperbola.morphWait(Duration.ofMillis(5000), hyperbola.clone().setFunction(x -> (5 * pow(x, 4) - 2 * pow(x, 2) + 5) / 10).setScale(1));
-        /*dass sich f(x) negativer Unendlichkeit nähert.*/
-        Thread.sleep(2500);
+        Thread.sleep(5000);
+        /*Der Wert von f(x) nähert sich positiver Unendlichkeit.*/
+        hyperbola.morphWait(Duration.ofMillis(1000), hyperbola.clone().setFunction(x -> (5 * pow(x, 4) - 2 * pow(x, 2) + 5) / -10).setScale(100));
+        func.morph(Duration.ofMillis(500), "f(x)=\\frac{-5x^4+2x^2-5}{10}");
+        Thread.sleep(2000);
+        /*Und wenn x gegen Minus Unendlich geht, sehen Sie, dass sich f(x) negativer Unendlichkeit nähert.*/
         func.animateDelete(Duration.ofMillis(250));
         hyperbola.animateDeleteWait(Duration.ofMillis(1000));
         Thread.sleep(1000);
@@ -180,9 +184,9 @@ public class MathVideo extends JPanel {
 
     private static void fourCases(MathVideo mathVideo) throws InterruptedException {
         AnimatableDeletable[] cases = drawFourCases(mathVideo);
-        Thread.sleep(2500);
+        Thread.sleep(8000);
         deleteFourCases(cases);
-        Thread.sleep(1000);
+        Thread.sleep(100);
         /*
         Für die 4 Fälle, die wir uns gleich anschauen, ist nur a_n*x^n relevant, da für die Ermittlung des Aussehens des Graphen nur der Grad und der Koeffizient des x'es beim Grad relevant ist.
          */
@@ -193,7 +197,7 @@ public class MathVideo extends JPanel {
                 \\end{align}
                 """, WHITE, new Point2D.Double(mathVideo.getWidth() / -2.0, mathVideo.getHeight() / 2.0), 50);
         proof1.animateWait(Duration.ofMillis(1000));
-        Thread.sleep(2500);
+        Thread.sleep(7000);
         /*
         Wenn wir allgemein eine ganzrationale Funktion haben, können wir sie so umschreiben, sodass alles ein Faktor von x^n ist. Dies können wir ausnutzen,
          */
@@ -205,9 +209,9 @@ public class MathVideo extends JPanel {
                 \\end{align}
                 """, WHITE, new Point2D.Double(mathVideo.getWidth() / -2.0, mathVideo.getHeight() / 2.0 - 190), 50);
         proof2.animateWait(Duration.ofMillis(1000));
-        Thread.sleep(2500);
+        Thread.sleep(8500);
         /*
-        um klarzumachen, dass bei großen x der Term gegen 0 geht und dieser daher keinen Effekt hat. Das heißt, dass dann f(x) ungefähr a_n*x^n ist.
+        um klarzumachen, dass bei kleinen x der Term gegen 0 geht und dieser daher keinen Effekt hat. Das heißt, dass dann f(x) ungefähr a_n*x^n ist.
          */
         proof1.animateDelete(Duration.ofMillis(1000));
         proof2.animateDeleteWait(Duration.ofMillis(1000));
@@ -243,7 +247,7 @@ public class MathVideo extends JPanel {
         cases = drawFourCases(mathVideo);
         pparabolaLimit.animate(Duration.ofMillis(250));
         nparabolaLimit.animateWait(Duration.ofMillis(250));
-        Thread.sleep(2500);
+        Thread.sleep(4000);
         /*
         Ist der Grad gerade, so ähnelt die Funktion einer Parabel,
         gilt nur bei großen und kleinen Werten, andernfalls ist der Unterschied um den Ursprung herum zu groß:
@@ -252,9 +256,9 @@ public class MathVideo extends JPanel {
          */
         phyperbolaLimit.animate(Duration.ofMillis(2500));
         nhyperbolaLimit.animateWait(Duration.ofMillis(2500));
-        Thread.sleep(2500);
+        Thread.sleep(4000);
         /*
-        Ist der Grad ungerade, so ähnelt die Gunktion einer kubischen Parabel,
+        Ist der Grad ungerade, so ähnelt die Funktion einer kubischen Parabel,
         gilt nur bei großen und kleinen Werten, andernfalls ist der Unterschied um den Ursprung herum zu groß:
         für a > 0 gilt für x -> +∞ gilt f(x) -> +∞, für x -> -∞ gilt f(x) -> -∞
         für a < 0 gilt für x -> +∞ gilt f(x) -> -∞, für x -> -∞ gilt f(x) -> +∞
@@ -332,7 +336,7 @@ public class MathVideo extends JPanel {
         problem.animateWait(Duration.ofMillis(1000));
         solution.animateWait(Duration.ofMillis(1000));
         k.animateWait(Duration.ofMillis(1000));
-        Thread.sleep(2500);
+        Thread.sleep(16000);
         /*
         Schließlich betrachten wir die praktische Anwendung dieser Konzepte. In wirtschaftlichen Modellen können Funktionen das Verhalten von Ressourcen oder Gewinnen beschreiben.
         Das Verständnis, wie diese Funktionen in extremen Situationen reagieren, kann uns helfen, langfristige Trends und Stabilität zu analysieren.
@@ -355,6 +359,6 @@ public class MathVideo extends JPanel {
         title.animateWait(Duration.ofMillis(1000));
         subtitle.animate(Duration.ofMillis(750));
         credits.animateWait(Duration.ofMillis(750));
-        /*Zusammenfassend kann man sagen, dass der grobe verlauf des graphen mit den oben gennanten fällen ermittelt werden kann.*/
+        /*Zusammenfassend kann man sagen, dass der grobe Verlauf des Graphen mit den oben genannten Fällen ermittelt werden kann.*/
     }
 }

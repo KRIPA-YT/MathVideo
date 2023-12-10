@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca2da047-1c7f-4c74-94ff-3289b95b2a81" name="Changes" comment="Added LaTeX Support">
+    <list default="true" id="ca2da047-1c7f-4c74-94ff-3289b95b2a81" name="Changes" comment="Final version, todo timings">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MathVideo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MathVideo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Graph.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/LaTeX.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/LaTeX.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +139,14 @@
       <option name="project" value="LOCAL" />
       <updated>1702075200616</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Final version, todo timings">
+      <created>1702207723486</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1702207723486</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -159,7 +164,8 @@
     <MESSAGE value="Initial Commit" />
     <MESSAGE value="Added option to color code based on y value" />
     <MESSAGE value="Added LaTeX Support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added LaTeX Support" />
+    <MESSAGE value="Final version, todo timings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final version, todo timings" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
