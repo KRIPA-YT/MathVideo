@@ -4,16 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ca2da047-1c7f-4c74-94ff-3289b95b2a81" name="Changes" comment="Added option to color code based on y value">
-      <change afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/LaTeX.java" afterDir="false" />
+    <list default="true" id="ca2da047-1c7f-4c74-94ff-3289b95b2a81" name="Changes" comment="Added LaTeX Support">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Graph.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MathVideo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MathVideo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/MonoColorGraph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/MonoColorGraph.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/Text.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Text.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/HeightCodedGraph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/HeightCodedGraph.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Renderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Renderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Graph.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/Graph.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/LaTeX.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/de/amethyst/mathvideo/engine/LaTeX.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +61,8 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -138,7 +134,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701971169663</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added LaTeX Support">
+      <created>1702075200616</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1702075200616</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -155,7 +158,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial Commit" />
     <MESSAGE value="Added option to color code based on y value" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added option to color code based on y value" />
+    <MESSAGE value="Added LaTeX Support" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added LaTeX Support" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

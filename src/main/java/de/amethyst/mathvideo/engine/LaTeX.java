@@ -16,6 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static de.amethyst.mathvideo.MathVideo.FRAMERATE;
+import static de.amethyst.mathvideo.MathVideo.GRAY;
 import static de.amethyst.mathvideo.engine.RenderMath.*;
 import static java.lang.Math.*;
 
@@ -61,6 +62,16 @@ public class LaTeX implements AnimatableDeletable {
     @Setter(AccessLevel.PRIVATE)
     @Getter(AccessLevel.PRIVATE)
     private double deletionPercentage = 0;
+    @Setter(AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
+    private String morphTargetLaTeX;
+    @Setter(AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
+    private Duration morphDuration;
+    @Setter(AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
+    private boolean morph = false;
+
 
     public LaTeX(String laTeX, Color color, Point2D position) {
         this(laTeX, color, position, 50, Alignment.LEFT, true);
@@ -91,7 +102,7 @@ public class LaTeX implements AnimatableDeletable {
                 (int) interpolate(max(0, this.getAnimationPercentage() - this.getDeletionPercentage()), 0, this.getColor().getAlpha()));
         icon.setForeground(renderColor);
 
-        Point2D renderPosition = Renderer.coordinateSpaceToUserSpace(this.getPosition());
+        Point2D renderPosition = this.getPosition();
         AffineTransform aligner;
         switch (this.getAlignment()) {
             case CENTER -> {
@@ -103,6 +114,7 @@ public class LaTeX implements AnimatableDeletable {
                 renderPosition = aligner.transform(renderPosition, null);
             }
         }
+        renderPosition = Renderer.coordinateSpaceToUserSpace(renderPosition);
         icon.paintIcon(null, g, (int) renderPosition.getX(), (int) renderPosition.getY());
         updateAnimation();
         updateDeletion(g);
@@ -112,6 +124,11 @@ public class LaTeX implements AnimatableDeletable {
         if (this.getAnimationPercentage() >= 1) {
             if (this.getAnimationPercentage() > 1) {
                 this.setAnimationPercentage(1);
+            }
+            if (this.isMorph()) {
+                this.setMorphDuration(null);
+                this.setMorphTargetLaTeX(null);
+                this.setMorph(false);
             }
             return;
         }
@@ -126,6 +143,13 @@ public class LaTeX implements AnimatableDeletable {
 
         if (this.isDeletionFinished()) {
             g.setColor(new Color(0, 0, 0, 0));
+            if (this.getMorphTargetLaTeX() != null) {
+                this.setLaTeX(this.getMorphTargetLaTeX());
+                this.setDeletionDuration(null);
+                this.setDeletionPercentage(0);
+                this.setMorph(true);
+                this.animate(this.getMorphDuration().dividedBy(2));
+            }
             return;
         }
 
@@ -137,9 +161,10 @@ public class LaTeX implements AnimatableDeletable {
             if (this.getDeletionPercentage() > 1) {
                 this.setDeletionPercentage(1);
             }
+            if (this.getMorphTargetLaTeX() != null) {
+                return true;
+            }
             MathVideo.getRenderer().deleteRenderable(this);
-            this.setDeletionDuration(null);
-            this.setDeletionPercentage(0);
             return true;
         }
 
@@ -170,19 +195,9 @@ public class LaTeX implements AnimatableDeletable {
     }
 
     public void morph(Duration duration, String targetLaTeX) {
+        this.setMorphDuration(duration);
+        this.setMorphTargetLaTeX(targetLaTeX);
         this.animateDelete(duration.dividedBy(2));
-        LaTeX self = this;
-        Timer deletionTimer = new Timer();
-        deletionTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep((long) (2000 / FRAMERATE)); // Wait two frames
-                } catch (InterruptedException ignored) {}
-                setLaTeX(targetLaTeX);
-                animate(duration.dividedBy(2));
-            }
-        }, duration.dividedBy(2).toMillis());
     }
 
     public void morphWait(Duration duration, String targetLatTeX) throws InterruptedException {

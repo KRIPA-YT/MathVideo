@@ -40,11 +40,19 @@ public class Graph implements AnimatableDeletable, Cloneable {
 
     @Setter
     @Getter
-    private int start;
+    private int minX;
 
     @Setter
     @Getter
-    private int stop;
+    private int maxX;
+
+    @Setter
+    @Getter
+    private int minY = Integer.MIN_VALUE;
+
+    @Setter
+    @Getter
+    private int maxY = Integer.MAX_VALUE;
 
     @Setter
     @Getter
@@ -74,12 +82,12 @@ public class Graph implements AnimatableDeletable, Cloneable {
     @Getter(AccessLevel.PROTECTED)
     private double deletionPercentage = 0;
 
-    public Graph(Function<Double, Double> function, Paint paint, double width, int start, int stop, int scale, boolean smoothInterpolate) {
+    public Graph(Function<Double, Double> function, Paint paint, double width, int minX, int maxX, int scale, boolean smoothInterpolate) {
         this.setFunction(function);
         this.setPaint(paint);
         this.setWidth(width);
-        this.setStart(start);
-        this.setStop(stop);
+        this.setMinX(minX);
+        this.setMaxX(maxX);
         this.setScale(scale);
         this.setSmoothInterpolate(smoothInterpolate);
     }
@@ -109,11 +117,17 @@ public class Graph implements AnimatableDeletable, Cloneable {
 
     @Override
     public void render(Graphics2D g) {
-        double start = interpolate(this.getDeletionPercentage(), this.getStart(), this.getStop());
-        double stop = interpolate(this.getAnimationPercentage(), this.getStart(), this.getStop());
+        double start = interpolate(this.getDeletionPercentage(), this.getMinX(), this.getMaxX());
+        double stop = interpolate(this.getAnimationPercentage(), this.getMinX(), this.getMaxX());
         for (double i = start; i < stop; i += RESOLUTION) {
             double y1 = interpolate(this.getMorphPercentage(), this.evaluate(i), this.getMorphTarget().evaluate(i));
             double y2 = interpolate(this.getMorphPercentage(), this.evaluate(i + RESOLUTION), this.getMorphTarget().evaluate(i + RESOLUTION));
+
+            if (y1 > this.getMaxY() || y1 < this.getMinY()
+             || y2 > this.getMaxY() || y2 < this.getMinY()) {
+                continue;
+            }
+
             int[] color = this.getColorAtPos(g, this.getPaint(), new Point2D.Double(i, y1));
             int[] targetColor = this.getColorAtPos(g, this.getMorphTarget().getPaint(), new Point2D.Double(i, y1));
             float[] startHSB = Color.RGBtoHSB(color[0], color[1], color[2], null);
